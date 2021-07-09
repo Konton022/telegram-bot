@@ -1,0 +1,7 @@
+###match:   [
+  '/weather sochi',
+  'sochi',
+  index: 0,
+  input: '/weather sochi',
+  groups: undefined
+]

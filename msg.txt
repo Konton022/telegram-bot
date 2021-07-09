@@ -1,0 +1,22 @@
+{
+  message_id: 180,
+  from: {
+    id: 412702769,
+    is_bot: false,
+    first_name: 'Konstantin',
+    last_name: 'Sav',
+    username: 'KonstantinSavelev',
+    language_code: 'ru'
+  },
+  chat: {
+    id: 412702769,
+    first_name: 'Konstantin',
+    last_name: 'Sav',
+    username: 'KonstantinSavelev',
+    type: 'private'
+  },
+  date: 1625863214,
+  text: '/start',
+  entities: [ { offset: 0, length: 6, type: 'bot_command' } ]
+}
+
