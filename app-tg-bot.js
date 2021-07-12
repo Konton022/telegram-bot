@@ -27,6 +27,7 @@ bot.onText(/\/weather (.+)/, async (msg, match) => {
 		//console.log(currentWeather)
 		const response = `Temperature is ${Math.round(currentWeather.main.temp - 273)} in ${currentWeather.name}`
         bot.sendMessage(chatId, response)
+	bot.sendMessage(chatId, `currentWeather:  ${JSON.stringify(currentWeather)}`)
 	} catch(e) {
 		console.log(e);
 	}
@@ -36,7 +37,7 @@ async function getWeather(city) {
 	let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=ae47378a82743093b5efe8934910c74c`;
 		let response = await fetch(url);
 		let data = await response.json();
-		//console.log(data);
+		console.log(data);
 		return data
 }
 
