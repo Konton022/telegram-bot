@@ -25,9 +25,10 @@ bot.onText(/\/weather (.+)/, async (msg, match) => {
 		console.log('###match:  ', match);
 		const currentWeather = await getWeather(resp);
 		//console.log(currentWeather)
-		const response = `Temperature is ${Math.round(currentWeather.main.temp - 273)} in ${currentWeather.name}`
-        bot.sendMessage(chatId, response)
-	bot.sendMessage(chatId, `currentWeather:  ${JSON.stringify(currentWeather)}`)
+		const response = `It's ${Math.round(currentWeather.main.temp - 273)} degreesС in ${currentWeather.name}`
+        // bot.sendSticker(chatId, ()=> {getWeatherIcon(currentWeather.weather[0][description])})
+		bot.sendMessage(chatId, response)
+		// bot.sendMessage(chatId, `currentWeather:  ${JSON.stringify(currentWeather)}`)
 	} catch(e) {
 		console.log(e);
 	}
@@ -35,13 +36,16 @@ bot.onText(/\/weather (.+)/, async (msg, match) => {
 async function getWeather(city) {
 	
 	let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=ae47378a82743093b5efe8934910c74c`;
-		let response = await fetch(url);
-		let data = await response.json();
-		console.log(data);
-		return data
+	const encoded = encodeURI(url)
+	let response = await fetch(encoded);
+	let data = await response.json();
+	console.log(data);
+	return data
 }
 
-
+function getWeatherIcon(icon){
+	return `https://openweathermap.org/img/wn/${icon}@2x.png`
+}
 
 
 function  currTemp(obj) {
