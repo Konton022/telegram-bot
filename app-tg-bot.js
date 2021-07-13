@@ -17,20 +17,19 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 	bot.sendMessage(chatId, resp)
 })
 
-
 bot.onText(/\/weather (.+)/, async (msg, match) => {
     try{    
 		const chatId = msg.chat.id
         	const resp = `${match[1]}`
-		console.log('###match:  ', match);
+		// console.log('###match:  ', match);
 		const currentWeather = await getWeather(resp);
 		//console.log(currentWeather)
-		const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degreesС in ${currentWeather.name}`
-        	bot.sendPhoto(chatId,'https://openweathermap.org/img/wn/01n@2x.png',{caption: `test message`})
+		const {description, icon} = currentWeather.weather[0];
+		// console.log('###description-icon:  ', description, icon);
+		const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degС and ${description} in ${currentWeather.name}`
+        	bot.sendPhoto(chatId, getWeatherIcon(icon),{caption: response})
 		//getWeatherIcon(currentWeather.weather[0].icon))
-		.then(function(data){console.log(data)})
-	bot.sendMessage(chatId, response)
-		// bot.sendMessage(chatId, `currentWeather:  ${JSON.stringify(currentWeather)}`)
+		.then(function(data){console.log('###data: ',data)})
 	} catch(e) {
 		console.log(e);
 	}
