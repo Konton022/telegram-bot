@@ -26,7 +26,7 @@ bot.onText(/\/weather (.+)/, async (msg, match) => {
 		const currentWeather = await getWeather(resp);
 		//console.log(currentWeather)
 		const response = `It's ${Math.round(currentWeather.main.temp - 273)} degreesС in ${currentWeather.name}`
-        // bot.sendSticker(chatId, ()=> {getWeatherIcon(currentWeather.weather[0][description])})
+        bot.sendSticker(chatId, getWeatherIcon(currentWeather.weather[0].icon))
 		bot.sendMessage(chatId, response)
 		// bot.sendMessage(chatId, `currentWeather:  ${JSON.stringify(currentWeather)}`)
 	} catch(e) {
