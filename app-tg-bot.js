@@ -4,6 +4,18 @@ const fetch = require("node-fetch");
 const token = '1878028335:AAHV6V0QsxF5iz4o5Eklgjw-WXO-WbLPEO0';
 const bot = new TelegramBot(token, { polling: true });
 
+bot.on('message', msg=>{
+	bot.sendMessage( msg.chat.id, '', 
+		{
+			'reply_markup':{
+				'keyboard':[['/weather Ekaterinburg'],
+							['/weather Sochi'],
+							['/weather Moscow']]
+			}
+		}
+	)
+})
+
 bot.onText(/\/start/, (msg) => {
 	const chatId = msg.chat.id;
 	const userName = msg.chat.first_name;
@@ -20,16 +32,12 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 bot.onText(/\/weather (.+)/, async (msg, match) => {
     try{    
 		const chatId = msg.chat.id
-        	const resp = `${match[1]}`
-		// console.log('###match:  ', match);
+        const resp = `${match[1]}`
 		const currentWeather = await getWeather(resp);
-		//console.log(currentWeather)
 		const {description, icon} = currentWeather.weather[0];
-		// console.log('###description-icon:  ', description, icon);
-		const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degС and ${description} in ${currentWeather.name}`
-        	bot.sendPhoto(chatId, getWeatherIcon(icon),{caption: response})
-		//getWeatherIcon(currentWeather.weather[0].icon))
-		.then(function(data){console.log('###data: ',data)})
+		const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degC and ${description} in ${currentWeather.name}`
+        bot.sendPhoto(chatId, getWeatherIcon(icon),{caption: response})
+			.then(function(data){console.log('###data: ',data)})
 	} catch(e) {
 		console.log(e);
 	}
@@ -49,6 +57,3 @@ function getWeatherIcon(icon){
 }
 
 
-function  currTemp(obj) {
-	return obj.main
-}
