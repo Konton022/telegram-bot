@@ -26,11 +26,9 @@ bot.onText(/\/weather (.+)/, async (msg, match) => {
 		const currentWeather = await getWeather(resp);
 		//console.log(currentWeather)
 		const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degreesС in ${currentWeather.name}`
-        	bot.sendPhoto({chatId: msg.chat.id,
-			caption: `test message`,
-			photo: 'https://openweathermap.org/img/wn/01n@2x.png'})
+        	bot.sendPhoto(chatId,'https://openweathermap.org/img/wn/01n@2x.png',{caption: `test message`})
 		//getWeatherIcon(currentWeather.weather[0].icon))
-		//.then(function(data){console.log(data)})
+		.then(function(data){console.log(data)})
 	bot.sendMessage(chatId, response)
 		// bot.sendMessage(chatId, `currentWeather:  ${JSON.stringify(currentWeather)}`)
 	} catch(e) {
