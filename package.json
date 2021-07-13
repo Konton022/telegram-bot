@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "canvas": "^2.8.0",
     "node-fetch": "^2.6.1",
     "node-telegram-bot-api": "^0.53.0"
   },

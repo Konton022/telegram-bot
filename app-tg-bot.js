@@ -7,7 +7,7 @@ const bot = new TelegramBot(token, { polling: true });
 bot.onText(/\/start/, (msg) => {
 	const chatId = msg.chat.id;
 	const userName = msg.chat.first_name;
-	const resp = `Hello ${userName} , I'm smart weather bot. Write "/weather" + your city and I will send to you current weather `
+	const resp = `Hello ${userName} , I'm weather bot. Write "/weather" + your city and I will send to you current weather `
 	bot.sendMessage(chatId, resp)
 })
 
@@ -21,13 +21,17 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 bot.onText(/\/weather (.+)/, async (msg, match) => {
     try{    
 		const chatId = msg.chat.id
-        const resp = `${match[1]}`
+        	const resp = `${match[1]}`
 		console.log('###match:  ', match);
 		const currentWeather = await getWeather(resp);
 		//console.log(currentWeather)
-		const response = `It's ${Math.round(currentWeather.main.temp - 273)} degreesС in ${currentWeather.name}`
-        bot.sendSticker(chatId, getWeatherIcon(currentWeather.weather[0].icon))
-		bot.sendMessage(chatId, response)
+		const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degreesС in ${currentWeather.name}`
+        	bot.sendPhoto({chatId: msg.chat.id,
+			caption: `test message`,
+			photo: 'https://openweathermap.org/img/wn/01n@2x.png'})
+		//getWeatherIcon(currentWeather.weather[0].icon))
+		//.then(function(data){console.log(data)})
+	bot.sendMessage(chatId, response)
 		// bot.sendMessage(chatId, `currentWeather:  ${JSON.stringify(currentWeather)}`)
 	} catch(e) {
 		console.log(e);
