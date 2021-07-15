@@ -2,7 +2,7 @@
   "name": "tg-boot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app-tg-bot.js",
   "dependencies": {
     "canvas": "^2.8.0",
     "node-fetch": "^2.6.1",
@@ -10,7 +10,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nodemon app-tg-bot.js"
   },
   "keywords": [],
   "author": "",

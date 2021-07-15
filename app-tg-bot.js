@@ -5,7 +5,7 @@ const token = '1878028335:AAHV6V0QsxF5iz4o5Eklgjw-WXO-WbLPEO0';
 const bot = new TelegramBot(token, { polling: true });
 
 bot.on('message', msg=>{
-	bot.sendMessage( msg.chat.id, '', 
+	bot.sendMessage( msg.chat.id, 'buttons', 
 		{
 			'reply_markup':{
 				'keyboard':[['/weather Ekaterinburg'],
@@ -32,12 +32,14 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 bot.onText(/\/weather (.+)/, async (msg, match) => {
     try{    
 		const chatId = msg.chat.id
-        const resp = `${match[1]}`
+        	const resp = `${match[1]}`
 		const currentWeather = await getWeather(resp);
 		const {description, icon} = currentWeather.weather[0];
+		//const htmlResp = `<strong>in ${currentWeather.name}</strong><b>It's ${(currentWeather.main.temp - 273).toFixed(2)} degC and ${description}</b>`
 		const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degC and ${description} in ${currentWeather.name}`
         bot.sendPhoto(chatId, getWeatherIcon(icon),{caption: response})
 			.then(function(data){console.log('###data: ',data)})
+	//bot.sendMessage(chatId, htmlResp, {parse_mode: 'HTML'})
 	} catch(e) {
 		console.log(e);
 	}
