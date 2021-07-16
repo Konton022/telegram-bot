@@ -12,7 +12,9 @@ bot.on('callback_query', async (query)=>{
 	const currentWeather = await getWeather(query.data)
 	const {description, icon} = currentWeather.weather[0]
 	const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degC and ${description} in ${currentWeather.name}` 
-	bot.sendMessage(query.message.chat.id, response)
+	bot.sendPhoto(query.message.chat.id, getWeatherIcon(icon),{
+		caption: response
+	})
 })
 
 
