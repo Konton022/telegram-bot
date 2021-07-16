@@ -4,29 +4,34 @@ const fetch = require("node-fetch");
 const token = '1878028335:AAHV6V0QsxF5iz4o5Eklgjw-WXO-WbLPEO0';
 const bot = new TelegramBot(token, { polling: true });
 
-bot.on('message', msg=>{
-	bot.sendMessage( msg.chat.id, 'buttons', 
-		{
-			'reply_markup':{
-				'keyboard':[['/weather Ekaterinburg'],
-							['/weather Sochi'],
-							['/weather Moscow']]
-			}
-		}
-	)
+//bot.on('message', msg=>{
+//	bot.sendMessage( msg.chat.id, 'hello World!')
+
+bot.on('callback_query', async (query)=>{
+	console.log(query)
+	const currentWeather = await getWeather(query.data)
+	const {description, icon} = currentWeather.weather[0]
+	const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degC and ${description} in ${currentWeather.name}` 
+	bot.sendMessage(query.message.chat.id, response)
 })
+
 
 bot.onText(/\/start/, (msg) => {
 	const chatId = msg.chat.id;
 	const userName = msg.chat.first_name;
-	const resp = `Hello ${userName} , I'm weather bot. Write "/weather" + your city and I will send to you current weather `
+	const resp = `Hello ${userName} , I'm weather bot. Write "/weather" and choose your city and I will send to you current weather `
 	bot.sendMessage(chatId, resp)
 })
 
-bot.onText(/\/echo (.+)/, (msg, match) => {
+bot.onText(/\/weather/, (msg, match) => {
 	const chatId = msg.chat.id
-	const resp = match[1]
-	bot.sendMessage(chatId, resp)
+	const resp = `Choose your city!`
+	bot.sendMessage(chatId, resp,{
+		reply_markup: {
+			inline_keyboard: [[{text:'Екатеринбург', callback_data:'Ekaterinburg'}],
+					[{text:'Москва', callback_data:'Moscow'}],[{text:'Sochi', callback_data:'Sochi'}]]
+				}
+			})
 })
 
 bot.onText(/\/weather (.+)/, async (msg, match) => {
