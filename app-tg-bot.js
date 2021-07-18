@@ -1,8 +1,9 @@
-
+// import TOKEN from './token.js'
 const TelegramBot = require('node-telegram-bot-api');
 const fetch = require("node-fetch");
-const token = '1878028335:AAHV6V0QsxF5iz4o5Eklgjw-WXO-WbLPEO0';
-const bot = new TelegramBot(token, { polling: true });
+const {TOKEN} = require('./token');
+// const token = '1878028335:AAHV6V0QsxF5iz4o5Eklgjw-WXO-WbLPEO0';
+const bot = new TelegramBot(TOKEN, { polling: true });
 
 //bot.on('message', msg=>{
 //	bot.sendMessage( msg.chat.id, 'hello World!')
