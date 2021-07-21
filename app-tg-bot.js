@@ -2,21 +2,26 @@
 const TelegramBot = require('node-telegram-bot-api');
 const fetch = require("node-fetch");
 const {TOKEN} = require('./token');
-// const token = '1878028335:AAHV6V0QsxF5iz4o5Eklgjw-WXO-WbLPEO0';
 const bot = new TelegramBot(TOKEN, { polling: true });
-
+const inlineWeatherKeyboard = {reply_markup: {inline_keyboard: [ [{text:'Екатеринбург', callback_data:'lat=56.837859&lon=60.598705'}],
+                                        			[{text:'Москва', callback_data:'Moscow'}],
+								[{text:'Сочи', callback_data:'Sochi'}],]}}
 //bot.on('message', msg=>{
 //	bot.sendMessage( msg.chat.id, 'hello World!')
 
 bot.on('callback_query', async (query)=>{
 	console.log(query)
 	const currentWeather = await getWeather(query.data)
-	const {description, icon} = currentWeather.weather[0]
-	const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degC and ${description} in ${currentWeather.name}` 
+	//console.log(currentWeather);
+	const {description, icon} = currentWeather.current.weather[0]
+	const response = `It's ${currentWeather.current.temp} degC and ${description}` 
 	bot.sendPhoto(query.message.chat.id, getWeatherIcon(icon),{
 		caption: response
 	})
 })
+
+//bot.on('message', (response)=> {
+//		console.log('### response: ', response)})
 
 
 bot.onText(/\/start/, (msg) => {
@@ -29,12 +34,7 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(/\/weather/, (msg, match) => {
 	const chatId = msg.chat.id
 	const resp = `Choose your city!`
-	bot.sendMessage(chatId, resp,{
-		reply_markup: {
-			inline_keyboard: [[{text:'Екатеринбург', callback_data:'Ekaterinburg'}],
-					[{text:'Москва', callback_data:'Moscow'}],[{text:'Sochi', callback_data:'Sochi'}]]
-				}
-			})
+	bot.sendMessage(chatId, resp, inlineWeatherKeyboard)
 })
 
 bot.onText(/\/weather (.+)/, async (msg, match) => {
@@ -42,9 +42,9 @@ bot.onText(/\/weather (.+)/, async (msg, match) => {
 		const chatId = msg.chat.id
         	const resp = `${match[1]}`
 		const currentWeather = await getWeather(resp);
-		const {description, icon} = currentWeather.weather[0];
+		const {description, icon} = currentWeather.current.weather[0];
 		//const htmlResp = `<strong>in ${currentWeather.name}</strong><b>It's ${(currentWeather.main.temp - 273).toFixed(2)} degC and ${description}</b>`
-		const response = `It's ${(currentWeather.main.temp - 273).toFixed(2)} degC and ${description} in ${currentWeather.name}`
+		const response = `It's ${currentWeather.current.temp} degC and ${description} in ${currentWeather.name}`
         bot.sendPhoto(chatId, getWeatherIcon(icon),{caption: response})
 			.then(function(data){console.log('###data: ',data)})
 	//bot.sendMessage(chatId, htmlResp, {parse_mode: 'HTML'})
@@ -54,11 +54,11 @@ bot.onText(/\/weather (.+)/, async (msg, match) => {
 })
 async function getWeather(city) {
 	
-	let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=ae47378a82743093b5efe8934910c74c`;
+	let url = `https://api.openweathermap.org/data/2.5/onecall?${city}&exclude=minutely&units=metric&appid=ae47378a82743093b5efe8934910c74c`;
 	const encoded = encodeURI(url)
 	let response = await fetch(encoded);
 	let data = await response.json();
-	console.log(data);
+	//console.log(data);
 	return data
 }
 
