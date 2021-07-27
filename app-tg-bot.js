@@ -1,3 +1,4 @@
+'use strict'
 // import TOKEN from './token.js'
 const TelegramBot = require('node-telegram-bot-api');
 const fetch = require("node-fetch");
@@ -93,20 +94,4 @@ function getWeatherIcon(icon){
 }
 
 
-async function getCoordinates(adr){
-	let url = `https://geocode-maps.yandex.ru/1.x/?format=json&apikey=f0515e08-19b6-4455-b525-94d21c567eda&geocode=${adr}`
-	const encoded = encodeURI(url);
-	try {let response = await fetch(encoded, {
-		method: 'GET',
-		redirect: 'follow'
-	  })
-	let data = await response.json()
-	console.log('###geoObj:  ', data)
-	return data.response;
-	}
-	catch(err) {
-		console.log('err', err);
-	}
-
-}
 
