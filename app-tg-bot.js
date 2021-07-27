@@ -2,7 +2,7 @@
 // import TOKEN from './token.js'
 const TelegramBot = require('node-telegram-bot-api');
 const fetch = require("node-fetch");
-const {TOKEN} = require('./token');
+const {TOKEN, yaKey, owmKey} = require('./token');
 const bot = new TelegramBot(TOKEN, { polling: true });
 const inlineWeatherKeyboard = {reply_markup: 
 								{inline_keyboard: [ 
@@ -48,9 +48,18 @@ bot.onText(/\/weather/, (msg, match) => {
 					bot.on('message', msg=>{
 						console.log('###resp', msg.text)
 						bot.sendMessage(chatId, `${msg.text}`).then( async ()=>{
-							const coordObj = await getCoordinates(msg.text)
+							const coordObj = await getLonLanCoord(msg.text)
 							bot.removeAllListeners('message')
 							console.log('cO: ',coordObj);
+							const [lon, lat] = coordObj;
+							const weatherData = await getWeather(lat, lon)
+							const {descr, ico} = weatherData.current.weather[0]
+							const response = `It's ${weatherData.current.temp} degC and ${descr}` 
+							bot.sendPhoto(query.message.chat.id, getWeatherIcon(ico),{
+							caption: response
+							}).then(()=>{
+								bot.removeAllListeners('callback_query')
+							})
 						})
 					})
 				})
@@ -79,19 +88,44 @@ bot.onText(/\/weather/, (msg, match) => {
 // 		console.log(e);
 // 	}
 // })
-async function getWeather(city) {
+// async function getWeather(city) {
 	
-	let url = `https://api.openweathermap.org/data/2.5/onecall?${city}&exclude=minutely&units=metric&appid=ae47378a82743093b5efe8934910c74c`;
-	const encoded = encodeURI(url)
-	let response = await fetch(encoded);
-	let data = await response.json();
-	//console.log(data);
-	return data
-}
+// 	let url = `https://api.openweathermap.org/data/2.5/onecall?${city}&exclude=minutely&units=metric&appid=ae47378a82743093b5efe8934910c74c`;
+// 	const encoded = encodeURI(url)
+// 	let response = await fetch(encoded);
+// 	let data = await response.json();
+// 	//console.log(data);
+// 	return data
+// }
 
 function getWeatherIcon(icon){
 	return `https://openweathermap.org/img/wn/${icon}@2x.png`
 }
 
+async function getLonLanCoord(city){			// function return [lon, lan, name, description]
+	
+	let url = `https://geocode-maps.yandex.ru/1.x?geocode=${city}&apikey=${yaKey}&format=json`;
+	let coordObj = await fetch(url);
+	let json = await coordObj.text();
+	json = JSON.parse(json)
+	//console.log(json);
+	let geoObject = json.response.GeoObjectCollection.featureMember[0].GeoObject;
+	let {name, description} = geoObject;
+	let points = geoObject.Point.pos;
+	console.log (points, name, description);
+	
+	points = points.split(' ');
+	
+	return [...points, name, description]
+	
+};
 
+async function getWeather(lat, lon){ 			// function return object of weather
+	let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=daily,minutely&units=metric&appid=${owmKey}`
+	let weatherObj = await fetch(url)
+	let data = await weatherObj.json();
+	console.log(data);
+	return data
+	
+}
 
