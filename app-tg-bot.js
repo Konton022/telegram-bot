@@ -10,6 +10,8 @@ const inlineWeatherKeyboard = {reply_markup:
 									[{text:'Екатеринбург', callback_data:'Ekaterinburg'}],
                                     [{text:'Сочи', callback_data:'Sochi'}],
 									[{text:'Kemer', callback_data:'Kemer'}],
+
+
 									[{text:'...', callback_data: 'userInput'}]
 								]}
 							}
@@ -103,7 +105,9 @@ async function getWeather(lat, lon){ 			// function return object of weather
 	
 }
 
+
 function makeAnswer(city, temp, description){
 	return ` ${city} -- ${temp} -- ${description}`
+
 }
 
