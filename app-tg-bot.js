@@ -9,9 +9,7 @@ const inlineWeatherKeyboard = {reply_markup:
 								{inline_keyboard: [ 
 									[{text:'Екатеринбург', callback_data:'Ekaterinburg'}],
                                     [{text:'Сочи', callback_data:'Sochi'}],
-									[{text:'Kemer', callback_data:'Kemer'}],
-
-
+									[{text:'Кемер', callback_data:'Kemer'}],
 									[{text:'...', callback_data: 'userInput'}]
 								]}
 							}
