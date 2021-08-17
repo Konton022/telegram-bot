@@ -44,10 +44,11 @@ bot.onText(/\/weather/, (msg, match) => {
 				bot.sendMessage(chatId, 'Text me your city').then(()=>{
 					bot.on('message', msg=>{
 						console.log('###resp', msg.text)
-						bot.sendMessage(chatId, `${msg.text}`).then( async ()=>{
+						bot.sendMessage(chatId, `wait please... I am updating the information... `).then( async ()=>{
 							const [lon, lat, city] = await getLonLanCoord(msg.text)
 							bot.removeAllListeners('message')
 							const weatherData = await getWeather(lat, lon)
+							console.log(weatherData);
 							// console.log(weatherData.current.weather);
 							const temp = weatherData.current.temp;
 							const {description, icon} = weatherData.current.weather[0]
