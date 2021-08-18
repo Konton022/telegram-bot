@@ -7,12 +7,31 @@ const {TOKEN, yaKey, owmKey} = require('./token');
 const bot = new TelegramBot(TOKEN, { polling: true });
 const inlineWeatherKeyboard = {reply_markup: 
 								{inline_keyboard: [ 
-									[{text:'Екатеринбург', callback_data:'Ekaterinburg'}],
+									[{text: 'Екатеринбург', callback_data:'Ekaterinburg'}],
                                     [{text:'Сочи', callback_data:'Sochi'}],
 									[{text:'Кемер', callback_data:'Kemer'}],
 									[{text:'...', callback_data: 'userInput'}]
 								]}
 							}
+
+const smiles = {
+	'01d' :'\u2600\ufe0f',
+	'02d':'\ud83c\udf24',
+	'03d':'\u26c5\ufe0f',
+	'04d':'\u2601\ufe0f',
+	'09d':'\ud83c\udf26',
+	'10d':'\ud83c\udf27',
+	'13d':'\u26c8',
+	'50d':'\u2744\ufe0f',
+	'01n' :'\u2600\ufe0f',
+	'02n':'\ud83c\udf24',
+	'03n':'\u26c5\ufe0f',
+	'04n':'\u2601\ufe0f',
+	'09n':'\ud83c\udf26',
+	'10n':'\ud83c\udf27',
+	'13n':'\u26c8',
+	'50n':'\u2744\ufe0f',
+}
 
 
 
@@ -25,8 +44,12 @@ bot.onText(/\/start/, (msg) => {
 
 bot.onText(/\/weather/, (msg, match) => {
 	const chatId = msg.chat.id
-	const resp = `Choose your city!`
+	const resp = `Choose your city! ${smiles['01d']}`
 	bot.sendMessage(chatId, resp, inlineWeatherKeyboard).then(()=> {
+		// bot.on('callback_query', msg=>{
+		// 	console.log(msg);
+		// })
+	
 		bot.on('callback_query', async(query)=>{
 			console.log('### query: ',query.data)
 			if (query.data !== 'userInput'){
@@ -34,7 +57,7 @@ bot.onText(/\/weather/, (msg, match) => {
 				const currentWeather = await getWeather(lat, lon)
 				const temp = currentWeather.current.temp;
 				const {description, icon} = currentWeather.current.weather[0]
-				const response = makeAnswer(city, temp, description)
+				const response = makeAnswer(city, temp, description, icon)
 				bot.sendPhoto(query.message.chat.id, getWeatherIcon(icon),{
 				caption: response
 				}).then(()=>{
@@ -54,7 +77,7 @@ bot.onText(/\/weather/, (msg, match) => {
 							const {description, icon} = weatherData.current.weather[0]
 							// console.log(description, icon);
 							// const response = `It's ${weatherData.current.temp} degC and ${description}` 
-							const response = makeAnswer(city, temp, description)
+							const response = makeAnswer(city, temp, description, icon)
 							bot.sendPhoto(query.message.chat.id, getWeatherIcon(icon),{
 							caption: response
 							}).then(()=>{
@@ -105,8 +128,8 @@ async function getWeather(lat, lon){ 			// function return object of weather
 }
 
 
-function makeAnswer(city, temp, description){
-	return ` ${city} -- ${temp} -- ${description}`
+function makeAnswer(city, temp, description, icon){
+	return ` ${city} -- ${temp} -- ${description} -- ${smiles[icon]}`
 
 }
 
