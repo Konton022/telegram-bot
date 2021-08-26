@@ -1,39 +1,23 @@
 'use strict'
 console.log('run...');
-// import TOKEN from './token.js'
-const TelegramBot = require('node-telegram-bot-api');
-const fetch = require("node-fetch");
-const {TOKEN, yaKey, owmKey} = require('./token');
+
+import getWeatherIcon from './components/getWeatherIcon.js';
+import getLonLanCoord from './components/getLonLanCoord.js';
+import getWeather from './components/getWeather.js';
+import { TOKEN } from './token.js'
+import makeAnswer from './components/makeAnswer.js';
+import TelegramBot from 'node-telegram-bot-api';
+
 const bot = new TelegramBot(TOKEN, { polling: true });
+
 const inlineWeatherKeyboard = {reply_markup: 
 								{inline_keyboard: [ 
-									[{text: 'Екатеринбург', callback_data:'Ekaterinburg'}],
-                                    [{text:'Сочи', callback_data:'Sochi'}],
-									[{text:'Кемер', callback_data:'Kemer'}],
-									[{text:'...', callback_data: 'userInput'}]
+									[{text: 'Екатеринбург', callback_data:'Ekaterinburg'},{text:'Сочи', callback_data:'Sochi'}, {text:'Кемер', callback_data:'Kemer'}],
+                                    // [],
+									// [],
+									[{text:' \ud83c\udfe0 WRITE YOUR CITY! \ud83c\udfe0	', callback_data: 'userInput'}]
 								]}
 							}
-
-const smiles = {
-	'01d' :'\u2600\ufe0f',
-	'02d':'\ud83c\udf24',
-	'03d':'\u26c5\ufe0f',
-	'04d':'\u2601\ufe0f',
-	'09d':'\ud83c\udf26',
-	'10d':'\ud83c\udf27',
-	'13d':'\u26c8',
-	'50d':'\u2744\ufe0f',
-	'01n' :'\u2600\ufe0f',
-	'02n':'\ud83c\udf24',
-	'03n':'\u26c5\ufe0f',
-	'04n':'\u2601\ufe0f',
-	'09n':'\ud83c\udf26',
-	'10n':'\ud83c\udf27',
-	'13n':'\u26c8',
-	'50n':'\u2744\ufe0f',
-}
-
-
 
 bot.onText(/\/start/, (msg) => {
 	const chatId = msg.chat.id;
@@ -44,11 +28,8 @@ bot.onText(/\/start/, (msg) => {
 
 bot.onText(/\/weather/, (msg, match) => {
 	const chatId = msg.chat.id
-	const resp = `Choose your city! ${smiles['01d']}`
+	const resp = `Choose your city!`
 	bot.sendMessage(chatId, resp, inlineWeatherKeyboard).then(()=> {
-		// bot.on('callback_query', msg=>{
-		// 	console.log(msg);
-		// })
 	
 		bot.on('callback_query', async(query)=>{
 			console.log('### query: ',query.data)
@@ -68,16 +49,15 @@ bot.onText(/\/weather/, (msg, match) => {
 					bot.on('message', msg=>{
 						console.log('###resp', msg.text)
 						bot.sendMessage(chatId, `wait please... I am updating the information... `).then( async ()=>{
-							const [lon, lat, city] = await getLonLanCoord(msg.text)
+							const [lon, lat, city, descrp, text] = await getLonLanCoord(msg.text)
 							bot.removeAllListeners('message')
 							const weatherData = await getWeather(lat, lon)
-							console.log(weatherData);
-							// console.log(weatherData.current.weather);
+							console.log('weather is ', weatherData.hourly[0].weather[0]);
+							
 							const temp = weatherData.current.temp;
 							const {description, icon} = weatherData.current.weather[0]
-							// console.log(description, icon);
-							// const response = `It's ${weatherData.current.temp} degC and ${description}` 
-							const response = makeAnswer(city, temp, description, icon)
+
+							const response = makeAnswer(text, temp, description, icon)
 							bot.sendPhoto(query.message.chat.id, getWeatherIcon(icon),{
 							caption: response
 							}).then(()=>{
@@ -93,43 +73,17 @@ bot.onText(/\/weather/, (msg, match) => {
 
 		
 	})
-})	
+})
 
-function getWeatherIcon(icon){
-	return `https://openweathermap.org/img/wn/${icon}@2x.png`
-}
+bot.onText(/\/forecast/, (msg) => {
 
-async function getLonLanCoord(city){			// function return [lon, lan, name, description]
-	
-	let url = `https://geocode-maps.yandex.ru/1.x?geocode=${city}&apikey=${yaKey}&format=json`;
-	const encoded = encodeURI(url)
-	let coordObj = await fetch(encoded);
-	let json = await coordObj.text();
-	json = JSON.parse(json)
-	let geoObject = json.response.GeoObjectCollection.featureMember[0].GeoObject;
-	console.log(geoObject);
-	let {name, description} = geoObject;
-	let points = geoObject.Point.pos;
-	console.log (points, name, description);
-	
-	points = points.split(' ');
-	
-	return [...points, name, description]
-	
-};
-
-async function getWeather(lat, lon){ 			// function return object of weather
-	let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=daily,minutely&units=metric&appid=${owmKey}`
-	let weatherObj = await fetch(url)
-	let data = await weatherObj.json();
-	//console.log(data);
-	return data
-	
-}
+})
 
 
-function makeAnswer(city, temp, description, icon){
-	return ` ${city} -- ${temp} -- ${description} -- ${smiles[icon]}`
 
-}
+
+
+
+
+
 
