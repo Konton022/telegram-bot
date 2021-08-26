@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "app-tg-bot.js",
+  "type": "module",
   "dependencies": {
     "canvas": "^2.8.0",
     "node-fetch": "^2.6.1",
@@ -10,7 +11,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "nodemon app-tg-bot.js"
+    "start": "nodemon app-tg-bot.js"
   },
   "keywords": [],
   "author": "",
