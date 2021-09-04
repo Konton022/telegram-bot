@@ -1,6 +1,7 @@
 'use strict'
 console.log('run...');
 
+
 import fs from 'fs';
 import TelegramBot from 'node-telegram-bot-api';
 import fetch from "node-fetch";
@@ -26,6 +27,7 @@ const inlineWeatherKeyboard = {reply_markup:
 							}
 
 
+
 fs.mkdir('./LOGS', (err)=>{
 	if(err){
 		console.log(err);
@@ -39,7 +41,6 @@ bot.on('message', (msg)=>{
 		console.log('write message');
 	})
 })
-
 
 bot.onText(/\/start/, (msg) => {
 	const chatId = msg.chat.id;
