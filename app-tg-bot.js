@@ -103,6 +103,16 @@ bot.onText(/\/forecast/, (msg) => {
 
 })
 
+bot.onText(/\/logs/, (msg)=>{
+	fs.readFile('./LOGS/logs.txt', 'utf8', (err, data)=>{
+
+
+		
+		bot.sendMessage(msg.chat.id, `there is your data length: ${data.length}`)
+		
+	})
+})
+
 
 
 
