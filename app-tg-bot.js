@@ -1,9 +1,10 @@
 'use strict'
 console.log('run...');
-// import TOKEN from './token.js'
-const TelegramBot = require('node-telegram-bot-api');
-const fetch = require("node-fetch");
-const {TOKEN, yaKey, owmKey} = require('./token');
+
+import fs from 'fs';
+import TelegramBot from 'node-telegram-bot-api';
+import fetch from "node-fetch";
+import { TOKEN, yaKey, owmKey } from './token.js';
 const bot = new TelegramBot(TOKEN, { polling: true });
 const inlineWeatherKeyboard = {reply_markup: 
 								{inline_keyboard: [ 
@@ -14,13 +15,26 @@ const inlineWeatherKeyboard = {reply_markup:
 								]}
 							}
 
+fs.mkdir('./LOGS', (err)=>{
+	if(err){
+		console.log(err);
+	} else {
+		console.log('Folder was created');
+	}
+})
 
+bot.on('message', (msg)=>{
+	fs.appendFile('./LOGS/logs.txt', `${JSON.stringify(msg)}\n`, ()=>{
+		console.log('write message');
+	})
+})
 
 bot.onText(/\/start/, (msg) => {
 	const chatId = msg.chat.id;
 	const userName = msg.chat.first_name;
 	const resp = `Hello ${userName} , I'm weather bot. Write "/weather" and choose your city and I will send to you current weather `
 	bot.sendMessage(chatId, resp)
+
 })
 
 bot.onText(/\/weather/, (msg, match) => {
