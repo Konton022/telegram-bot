@@ -1,12 +1,19 @@
 'use strict'
 console.log('run...');
 
+
+import fs from 'fs';
+import TelegramBot from 'node-telegram-bot-api';
+import fetch from "node-fetch";
+import { TOKEN, yaKey, owmKey } from './token.js';
+
 import getWeatherIcon from './components/getWeatherIcon.js';
 import getLonLanCoord from './components/getLonLanCoord.js';
 import getWeather from './components/getWeather.js';
-import { TOKEN } from './token.js'
+// import { TOKEN } from './token.js'
 import makeAnswer from './components/makeAnswer.js';
-import TelegramBot from 'node-telegram-bot-api';
+// import TelegramBot from 'node-telegram-bot-api';
+
 
 const bot = new TelegramBot(TOKEN, { polling: true });
 
@@ -19,11 +26,28 @@ const inlineWeatherKeyboard = {reply_markup:
 								]}
 							}
 
+
+
+fs.mkdir('./LOGS', (err)=>{
+	if(err){
+		console.log(err);
+	} else {
+		console.log('Folder was created');
+	}
+})
+
+bot.on('message', (msg)=>{
+	fs.appendFile('./LOGS/logs.txt', `${JSON.stringify(msg)}\n`, ()=>{
+		console.log('write message');
+	})
+})
+
 bot.onText(/\/start/, (msg) => {
 	const chatId = msg.chat.id;
 	const userName = msg.chat.first_name;
 	const resp = `Hello ${userName} , I'm weather bot. Write "/weather" and choose your city and I will send to you current weather `
 	bot.sendMessage(chatId, resp)
+
 })
 
 bot.onText(/\/weather/, (msg, match) => {
